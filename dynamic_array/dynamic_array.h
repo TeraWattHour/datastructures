@@ -1,3 +1,6 @@
+#ifndef DATASTRUCTURES_DA
+#define DATASTRUCTURES_DA
+
 #include <stdlib.h>
 #include <assert.h>
 
@@ -25,3 +28,5 @@
 
 #define da_foreach(da, ty) \
   for (struct { int i; ty elem; } it = {.i=0, .elem=(da)->elements[0]}; it.i < (da)->count; it.i++, it.elem=(da)->elements[it.i])
+
+#endif
