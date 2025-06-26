@@ -1,7 +1,7 @@
 ## Dynamic array
 
 A dynamic array is a linear data structure containing `n` elements of a certain type, where $n\in\mathbb{N}_0$.  
-$\mathbb{N}_0$ is platform-specific and constrained to the size of `size-t`.
+$\mathbb{N}_0$ is platform-specific and constrained to the size of `size_t`.
 
 
 ### Usage
