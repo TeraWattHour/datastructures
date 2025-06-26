@@ -13,9 +13,9 @@
   }; \
   struct Dynamic_Array_##ty da_init_##ty() { \
     return (struct Dynamic_Array_##ty) { \
-      .elements = malloc(sizeof(ty) * 256), \
+      .elements = malloc(sizeof(ty) * 64), \
       .count = 0, \
-      .capacity = 256 \
+      .capacity = 64 \
     }; \
   } \
   void da_append_##ty(struct Dynamic_Array_##ty *da, ty elem) { \
