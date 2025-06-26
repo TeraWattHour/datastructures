@@ -5,6 +5,42 @@
 #include <assert.h>
 #include <string.h>
 
+typedef struct Dynamic_Array {
+  void *elements;
+  size_t count;
+  size_t capacity;
+  size_t element_size;
+} Dynamic_Array;
+
+Dynamic_Array da_init(size_t element_size) {
+  return (Dynamic_Array) {
+    .element_size = element_size,
+    .elements = malloc(64 * element_size),
+    .capacity = 64,
+    .count = 0,
+  };
+}
+
+void da_append(Dynamic_Array *da, void *elem) {
+  if (da->count >= da->capacity * 0.75) { \
+    assert(da->capacity / 2 <= SIZE_T_MAX && "dynamic array can contain at most `SIZE_T_MAX` elements"); 
+    da->capacity *= 2; 
+    da->elements = realloc(da->elements, da->element_size * da->capacity); 
+    assert(da->elements); 
+  }
+  size_t destination = (size_t)da->elements + da->count * da->element_size;
+  memcpy((void *) destination, &elem, da->element_size);
+}
+
+void *da_get(Dynamic_Array *da, size_t idx) {
+  return da->elements + idx * da->element_size;
+}
+
+void da_remove(Dynamic_Array *da, size_t idx) { 
+  assert(idx < da->count); 
+  memmove(da->elements+idx, da->elements+idx+1, da->element_size * (--da->count-idx)); 
+}
+
 #define DA_CREATE_TYPE(ty) \
   struct Dynamic_Array_##ty { \
     ty *elements; \

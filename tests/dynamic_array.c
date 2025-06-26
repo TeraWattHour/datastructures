@@ -69,9 +69,11 @@ void test_RemoveBack(void) {
 
 int main(void) {
   UNITY_BEGIN();
+
   RUN_TEST(test_Foreach);
   RUN_TEST(test_RemoveFront);
   RUN_TEST(test_RemoveFold);
   RUN_TEST(test_RemoveBack);
+
   return UNITY_END();
 }
