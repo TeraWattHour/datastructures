@@ -24,3 +24,19 @@ int main() {
   // 0: 10
   // 1: 20
 }
+```
+
+### Interface
+```c
+typedef da_% Dynamic_Array_%; // type alias for convenience
+da_% da_init_%(); // initializes the dynamic_array by allocating 256 elements of type ty 
+void da_append_%(da_% *da, % elem); // appends the `elem` to the back of the array
+void da_remove_%(da_% *da, size_t idx); // removes element at `idx`, shifts the rest to the left. DOES NOT ZERO-SET THE DANGLING ELEMENTS!
+
+da_foreach(da_% *da, %) {
+  // iterates over elements of `da`
+  size_t index = it.i;
+  % element = it.elem;
+}
+```
+`%` - substitute the provided type
