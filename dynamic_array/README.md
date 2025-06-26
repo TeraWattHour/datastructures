@@ -1,7 +1,8 @@
 ## Dynamic array
 
 A dynamic array is a linear data structure containing `n` elements of a certain type, where $n\in\mathbb{N}_0$.  
-$\mathbb{N}_0$ is platform-specific and constrained to the size of `size_t`.
+$\mathbb{N}_0$ is platform-specific and constrained to the size of `size_t`.  
+This implementation is heavily inspired by [stb](https://nothings.org/stb_ds/).
 
 
 ### Usage
@@ -9,44 +10,32 @@ $\mathbb{N}_0$ is platform-specific and constrained to the size of `size_t`.
 #include <stdio.h>
 #include "dynamic_array.h'
 
-DA_CREATE_TYPE(int);                                // creates structures and functions responsible for handling a dynamic array of ints, works essentially like a template
-typedef struct Dynamic_Array_int Dynamic_Array_Int; // convenience type alias
+// The first argument of every macro in this section is directly mutated by them. 
+// This means that you must pass the array pointer by reference to other functions. 
+// Hence, we use `int **ints` here, instead of `int *ints`, which would make any changes to `ints`
+// ineffective in the `main` function scope. This is similar to how `realloc` works.
+void append_two_items(int **ints) {
+  da_append(*ints, 10);
+  da_append(*ints, 20);
+}
 
 int main() {
-  Dynamic_Array_Int da_int = da_init_int();
-  da_append_int(&da_int, 10);
-  da_append_int(&da_int, 20);
-
-  da_foreach(&da_int, int) {
-    printf("%d: %d\n", it.i, it.elem);
+  int *ints = NULL;
+  append_two_items(&ints);
+  da_append(ints, 30);
+  da_append(ints, 40);
+  
+  for (size_t i = 0; i < da_len(ints); i++) {
+    printf("%zu: %d\n", i, ints[i]);
   }
-
   // 0: 10
   // 1: 20
+  // 2: 30
+  // 3: 40
 }
 ```
 
 ### Interface
-```c
-typedef da_% Dynamic_Array_%; // type alias for convenience
-da_% da_init_%(); // initializes the dynamic_array by allocating 64 elements of type ty 
-void da_append_%(da_% *da, % elem); // appends the `elem` to the back of the array
-void da_remove_%(da_% *da, size_t idx); // removes element at `idx`, shifts the rest to the left. DOES NOT ZERO-SET THE DANGLING ELEMENTS!
-
-da_foreach(da_% *da, %) {
-  // iterates over elements of `da`
-  size_t index = it.i;
-  % element = it.elem;
-}
-```
+- `da_append(% *da, % elem)` - appends `elem`. 
+- `da_len(% *da)` - returns the number of items in the array.
 `%` - substitute the provided type
-
-### Notes
-Since the macro defines some functions associated with each type, it is advised to hide the macro call behind a guard to avoid redefinition errors:
-```c
-
-#ifndef DA_INT
-#define DA_INT
-DA_CREATE_TYPE(int)
-#endif
-```

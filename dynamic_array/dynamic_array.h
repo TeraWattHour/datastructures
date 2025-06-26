@@ -4,72 +4,42 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <assert.h>
 
 typedef struct Dynamic_Array {
-  void *elements;
   size_t count;
   size_t capacity;
-  size_t element_size;
 } Dynamic_Array;
 
-Dynamic_Array da_init(size_t element_size) {
-  return (Dynamic_Array) {
-    .element_size = element_size,
-    .elements = malloc(64 * element_size),
-    .capacity = 64,
-    .count = 0,
-  };
+#define da_header(p)      ((p) ? (Dynamic_Array *)(p)-1 : NULL)
+#define da_must(p)        (((Dynamic_Array *)((p) ? (p) : da_init(p))) - 1)
+#define da_init(p)        (p = da_initf(p, sizeof(*(p))))
+#define da_len(p)         ((p) ? da_header(p)->count : 0)
+#define da_append(p, v)   ({ da_must(p); da_growf((void **)&p, sizeof(*(p))); (p)[da_header(p)->count++] = (v); })
+#define da_remove(p, idx) ({ da_must(p); da_removef(p, idx, sizeof(*p)); })
+
+// Allocates space for 8 potential elements and a prefix that stores information about the state of the array.
+// Returns pointer to the 0th element.
+void *da_initf(void *p, size_t element_size) {
+  Dynamic_Array *da = malloc(sizeof(Dynamic_Array) + 8 * element_size);
+  da->count = 0;
+  da->capacity = 8;
+  return da + 1;
 }
 
-void da_append(Dynamic_Array *da, void *elem) {
-  if (da->count >= da->capacity * 0.75) { \
-    assert(da->capacity / 2 <= SIZE_T_MAX && "dynamic array can contain at most `SIZE_T_MAX` elements"); 
-    da->capacity *= 2; 
-    da->elements = realloc(da->elements, da->element_size * da->capacity); 
-    assert(da->elements); 
-  }
-  size_t destination = (size_t)da->elements + da->count * da->element_size;
-  memcpy((void *) destination, &elem, da->element_size);
+// Grows the array's size twofold.
+// Returns pointer to the 0th element.
+void da_growf(void **p, size_t element_size) {
+  Dynamic_Array *da = da_header(*p);
+  if (da->count < da->capacity * 0.75) return;
+
+  da->capacity *= 2;
+  *p = ((Dynamic_Array *)realloc(da, sizeof(Dynamic_Array) + da->capacity * element_size)) + 1;
 }
 
-void *da_get(Dynamic_Array *da, size_t idx) {
-  return da->elements + idx * da->element_size;
+void da_removef(void *p, size_t idx, size_t element_size) { 
+  Dynamic_Array *da = da_header(p);
+  memmove(p+idx*element_size, p+(idx+1)*element_size, element_size * (--da->count-idx)); 
 }
-
-void da_remove(Dynamic_Array *da, size_t idx) { 
-  assert(idx < da->count); 
-  memmove(da->elements+idx, da->elements+idx+1, da->element_size * (--da->count-idx)); 
-}
-
-#define DA_CREATE_TYPE(ty) \
-  struct Dynamic_Array_##ty { \
-    ty *elements; \
-    size_t count; \
-    size_t capacity; \
-  }; \
-  struct Dynamic_Array_##ty da_init_##ty() { \
-    return (struct Dynamic_Array_##ty) { \
-      .elements = malloc(sizeof(ty) * 64), \
-      .count = 0, \
-      .capacity = 64 \
-    }; \
-  } \
-  void da_append_##ty(struct Dynamic_Array_##ty *da, ty elem) { \
-    if (da->count >= da->capacity * 0.75) { \
-      assert(da->capacity / 2 <= SIZE_T_MAX && "dynamic array can contain at most `SIZE_T_MAX` elements"); \
-      da->capacity *= 2; \
-      da->elements = realloc(da->elements, sizeof(ty) * da->capacity); \
-      assert(da->elements); \
-    } \
-    da->elements[da->count++] = elem; \
-  } \
-  void da_remove_##ty(struct Dynamic_Array_##ty *da, size_t idx) { \
-    assert(idx < da->count); \
-    memmove(da->elements+idx, da->elements+idx+1, sizeof(ty) * (da->count-idx-1)); \
-    da->count--; \
-  }
-
-#define da_foreach(da, ty) \
-  for (struct { int i; ty elem; } it = {.i=0, .elem=(da)->elements[0]}; it.i < (da)->count; it.i++, it.elem=(da)->elements[it.i])
 
 #endif
