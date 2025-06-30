@@ -7,7 +7,7 @@ void setUp(void) {}
 void tearDown(void) {}
 
 void test_ArrayRetainsManyValues(void) {
-  int *seq = NULL;
+  int *seq = da_alloc(int);
 
   for (int i = 0; i < INT16_MAX; i++) {
     da_append(seq, i);
@@ -19,7 +19,8 @@ void test_ArrayRetainsManyValues(void) {
 }
 
 void test_RemoveFront(void) {
-  int *seq = NULL;
+  int *seq = da_alloc(int);
+  
   da_append(seq, 1);
   da_append(seq, 2);
 
@@ -29,7 +30,8 @@ void test_RemoveFront(void) {
 }
 
 void test_RemoveFold(void) {
-  int *seq = NULL;
+  int *seq = da_alloc(int);
+
   for (int i = 0; i < 32; i++) da_append(seq, i);
   for (int i = 0; i < 31; i++) {
     da_remove(seq, 0);
@@ -40,7 +42,8 @@ void test_RemoveFold(void) {
 }
 
 void test_RemoveBack(void) {
-  int *seq = NULL;
+  int *seq = da_alloc(int);
+
   for (int i = 0; i < 32; i++) da_append(seq, i);
   for (int i = 0; i < 32; i++) {
     TEST_ASSERT_EQUAL(32-i, da_header(seq)->count);

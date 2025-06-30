@@ -20,7 +20,8 @@ void append_two_items(int **ints) {
 }
 
 int main() {
-  int *ints = NULL;
+  int *ints = da_alloc(int);
+  
   append_two_items(&ints);
   da_append(ints, 30);
   da_append(ints, 40);
