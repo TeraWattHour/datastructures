@@ -4,8 +4,9 @@ Given a string `好的`, the generated structure looks like this:
 
 ```mermaid
 graph TD;
-    好-->的;
-    的-->NULL;
+    ROOT-- 好 -->好;
+    好-- 的 -->好的;
+    好的-->NULL
 ```
 
 ### Usage
