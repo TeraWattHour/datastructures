@@ -14,10 +14,11 @@ typedef struct Dynamic_Array {
 #define da_alloc(typ)                     da_allocf(sizeof(typ), 0)
 #define da_allocn(typ, initial_capacity)  da_allocf(sizeof(typ), initial_capacity)
 
-#define da_header(p)      ((p) ? (Dynamic_Array *)(p)-1 : NULL)
+#define da_header(p)      ({ assert(p && "pointer mustn't be NULL"); (Dynamic_Array *)(p)-1; })
 #define da_len(p)         ((p) ? da_header(p)->count : 0)
 #define da_append(p, v)   ({ da_growf((void **)&p, sizeof(*(p))); (p)[da_header(p)->count++] = (v); })
 #define da_remove(p, idx) ({ da_removef(p, idx, sizeof(*p)); })
+#define da_remswap(p, idx) ((p)[idx] = (p)[--da_header(p)->count])
 
 void *da_allocf(size_t element_size, size_t initial_capacity) {
   Dynamic_Array *da = malloc(sizeof(Dynamic_Array) + initial_capacity * element_size);

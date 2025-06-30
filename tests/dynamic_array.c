@@ -20,7 +20,7 @@ void test_ArrayRetainsManyValues(void) {
 
 void test_RemoveFront(void) {
   int *seq = da_alloc(int);
-  
+
   da_append(seq, 1);
   da_append(seq, 2);
 
@@ -53,9 +53,19 @@ void test_RemoveBack(void) {
   TEST_ASSERT_EQUAL(0, da_header(seq)->count);
 }
 
+void test_Remswap(void) {
+  int *seq = da_alloc(int);
+  for (int i = 0; i < 32; i++) da_append(seq, i);
+  TEST_ASSERT_EQUAL(32, da_len(seq));
+  da_remswap(seq, 0);
+  TEST_ASSERT_EQUAL(31, da_len(seq));
+  TEST_ASSERT_EQUAL(31, seq[0]);
+}
+
 int main(void) {
   UNITY_BEGIN();
 
+  RUN_TEST(test_Remswap);
   RUN_TEST(test_ArrayRetainsManyValues);
   RUN_TEST(test_RemoveFront);
   RUN_TEST(test_RemoveFold);
