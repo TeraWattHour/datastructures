@@ -10,9 +10,9 @@ This implementation is heavily inspired by [stb](https://nothings.org/stb_ds/).
 #include <stdio.h>
 #include "dynamic_array.h'
 
-// The first argument of every macro in this section is directly mutated by them. 
-// This means that you must pass the array pointer by reference to other functions. 
-// Hence, we use `int **ints` here, instead of `int *ints`, which would make any changes to `ints`
+// Macros assign to the first argument on resize;
+// that means that you must pass the array pointer by reference to other functions. 
+// Hence, in the below example, we use `int **ints`, instead of `int *ints`, which could make any changes (resize) to `ints`
 // ineffective in the `main` function scope. This is similar to how `realloc` works.
 void append_two_items(int **ints) {
   da_append(*ints, 10);
