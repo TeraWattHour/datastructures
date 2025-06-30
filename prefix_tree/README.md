@@ -13,9 +13,9 @@ graph TD;
 #include "prefix_tree.h'
 
 int main() {
-  const char *source = "好的";
-  Prefix_Node *pn = pn_create(source);
-
-  // pn(好) -> pn(的)
+  Prefix_Node pn = {0};
+  pn_insert(&pn, "hello, world!");
+  pn_insert(&pn, "welcome");
+  pn_insert(&pn, "hello everyone");
 }
 ```

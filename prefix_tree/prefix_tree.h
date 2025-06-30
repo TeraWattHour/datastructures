@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "dynamic_array.h"
+
 size_t utf8_codepoint_width(char *source);
 
 typedef struct Prefix_Node {
@@ -15,28 +17,39 @@ typedef struct Prefix_Node {
   struct Prefix_Node *next;
 } Prefix_Node;
 
-Prefix_Node *pn_create(const char *source) {
-  if (!source || !*source) return NULL;
+void pn_insert(Prefix_Node *tree, const char *source) {
+  if (!source || !*source) return;
 
-  Prefix_Node *head = (Prefix_Node *)malloc(sizeof(Prefix_Node));
-  memset(head, 0, sizeof(Prefix_Node));
-
-  Prefix_Node *cursor = head;
+  Prefix_Node *node = tree;
 
   for (char *ptr = (char *)source; *ptr;) {
     size_t width = utf8_codepoint_width(ptr);
-    Prefix_Node *pn = (Prefix_Node *)malloc(sizeof(Prefix_Node));
-    pn->codepoint = ptr;
-    pn->width = width;
-    pn->next = NULL;
-
-    cursor->next = pn;
-    cursor = pn;
-
+    const char *codepoint = ptr;
     ptr += width;
+    
+    if (!node->next) node->next = da_alloc(Prefix_Node);
+    Prefix_Node *candidate = node->next;
+
+    for (; candidate < node->next + da_len(node->next); candidate++) {
+      // sequence already exists, no need for adding it again
+      if (width == candidate->width && strncmp(candidate->codepoint, codepoint, width) == 0) {
+        node = candidate;
+        goto outer;
+      }
+    }
+
+    Prefix_Node pn = {
+      .codepoint = codepoint,
+      .width = width,
+      .next = NULL,
+    };
+    da_append(node->next, pn);
+    node = &node->next[da_len(node->next)-1];
+
+  outer:;
   }
 
-  return head->next;
+  return;
 }
 
 size_t utf8_codepoint_width(char *source) {
