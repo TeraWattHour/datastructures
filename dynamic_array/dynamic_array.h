@@ -20,6 +20,14 @@ typedef struct Dynamic_Array {
 #define da_remove(p, idx) ({ da_removef(p, idx, sizeof(*p)); })
 #define da_remswap(p, idx) ((p)[idx] = (p)[--da_header(p)->count])
 
+void *da_allocf(size_t element_size, size_t initial_capacity);
+void da_growf(void **p, size_t element_size);
+void da_removef(void *p, size_t idx, size_t element_size);
+
+#endif // DATASTRUCTURES_DA
+
+#ifdef DATASTRUCTURES_DA_IMPLEMENTATION
+
 void *da_allocf(size_t element_size, size_t initial_capacity) {
   Dynamic_Array *da = (Dynamic_Array *)malloc(sizeof(Dynamic_Array) + initial_capacity * element_size);
   da->count = 0;
@@ -44,4 +52,4 @@ void da_removef(void *p, size_t idx, size_t element_size) {
   memmove(p+idx*element_size, p+(idx+1)*element_size, element_size * (--da->count-idx)); 
 }
 
-#endif
+#endif // DATASTRUCTURES_DA_IMPLEMENTATION
