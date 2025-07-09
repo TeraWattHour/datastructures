@@ -21,7 +21,7 @@ typedef struct Dynamic_Array {
 #define da_remswap(p, idx) ((p)[idx] = (p)[--da_header(p)->count])
 
 void *da_allocf(size_t element_size, size_t initial_capacity) {
-  Dynamic_Array *da = malloc(sizeof(Dynamic_Array) + initial_capacity * element_size);
+  Dynamic_Array *da = (Dynamic_Array *)malloc(sizeof(Dynamic_Array) + initial_capacity * element_size);
   da->count = 0;
   da->capacity = initial_capacity;
   return da + 1;
